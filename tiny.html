@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script
+    type="text/javascript"
+    src='https://cdn.tiny.cloud/1/srdz6nrz2mwmpvnyprz07i3i3n2ji9hhrpdnc40mwpho1mfc/tinymce/7/tinymce.min.js'
+    referrerpolicy="origin">
+  </script>
+  <script type="text/javascript">
+  tinymce.init({
+    selector: '#myTextarea',
+    width: "100%",
+    height: 500,
+    plugins: [
+      'advlist', 'autolink', 'link', 'image', 'lists', 'charmap', 'preview', 'anchor', 'pagebreak',
+      'searchreplace', 'wordcount', 'visualblocks', 'visualchars', 'code', 'fullscreen', 'insertdatetime',
+      'media', 'table', 'emoticons', 'help'
+    ],
+    toolbar: 'undo redo | styles | bold italic | alignleft aligncenter alignright alignjustify | ' +
+      'bullist numlist outdent indent | link image | print preview media fullscreen | ' +
+      'forecolor backcolor emoticons | help',
+    menu: {
+      favs: { title: 'My Favorites', items: 'code visualaid | searchreplace | emoticons' }
+    },
+    menubar: 'favs file edit view insert format tools table help',
+    content_css: 'css/content.css'
+  });
+
+  </script>
+</head>
+
+<body>
+    <h1>TinyMCE Editor</h1>
+  <textarea id="myTextarea"></textarea>
+  <button id="bt">Get HTML</button>
+    <div id="myhtml"></div>
+</body>
+<script>
+ bt.addEventListener('click', (e)=>{
+    console.log(e)  
+    myhtml.innerText=tinyMCE.get('myTextarea').getContent();
+  })  //this function gives raw HTML form of the content which is entered in the "textarea" below when we click on 
+  // the button
+</script>
+</html>

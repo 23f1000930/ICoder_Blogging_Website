@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %} Blogpost{% endblock title %}
+
+{% block body %}
+{% load humanize %} <!--by   time ago in django show-->
+{% load extras %} <!--This filter is created by me-->
+<div class="container my-3">
+  <div class="blog-post">
+    <h2 class="blog-post-title">{{post.title}}</h2>
+    <p class="blog-post-meta">{{post.timeStamp}} by <a href="/about">{{post.author}}</a>(<span > {{post.views}} views</span>)</p></p>
+
+    <p>{{post.content|safe}}</p>
+    <hr>
+  </div>
+</div>
+<div class="container">
+  <h4> Comments ({{comments.count}})</h4> <!--By queryset length django-->
+  <div class="my-2">
+    {% if user.is_authenticated %}
+    <form action="/blog/postComment" method="post">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="comment">Post Comment </label>
+        <input type="text" class="form-control" name="comment" placeholder="Enter comment here">
+      </div>
+      <input type="hidden" name="postSno" value="{{post.sno}}">
+      <input type="hidden" name="parentSno" value="">
+      <button type="submit" class="btn btn-outline-success my-2">Comment</button>
+    </form>
+    {% else %}
+    <p>Please Login to post a comment</p>
+    {% endif %}
+  </div>
+  {% for comment in comments %}
+  <div class="row my-3 mx-0">
+    <div class="col-md-1  "><!--w-100 makes width 100%-->
+      <img class="rounded mx-auto d-block w-100 p-1 rounded-4 border border-success" src="/static/img/user.png"
+        alt="user">
+    </div>
+    <div class="col-md-11 ">
+      <b> {{comment.user.username}} </b> <span class="badge text-bg-success">{{comment.timestamp | naturaltime}}</span>
+      <div> {{comment.comment}} </div>
+
+
+      <!--Reply Starts Here-->
+      <div class="reply mx-0">
+        <p class="d-inline-flex gap-1">
+          {% if user.is_authenticated %}
+          <button class="btn btn-sm btn-success" type="button" data-bs-toggle="collapse"
+            data-bs-target="#replyBox{{comment.sno}}" aria-expanded="false" aria-controls="replyBox{{comment.sno}}">
+            Reply
+          </button>
+        </p>
+        <div class="collapse" id="replyBox{{comment.sno}}">
+          <div class="card card-body">
+            <form action="/blog/postComment" method="post">
+              {% csrf_token %}
+              <div class="form-group">
+                <label for="comment">Post Reply </label>
+                <input type="text" class="form-control" name="comment" placeholder="Enter reply here">
+                <input type="hidden" name="parentSno" value="{{comment.sno}}">
+              </div>
+              <input type="hidden" name="postSno" value="{{post.sno}}">
+              <button type="submit" class="btn btn-success my-2">Reply</button>
+            </form>
+          </div>
+        </div>
+        {% else %}
+        <button class="btn btn-sm btn-success" type="button" data-bs-toggle="collapse"
+          data-bs-target="#replyBox{{comment.sno}}" aria-expanded="false" aria-controls="replyBox{{comment.sno}}"
+          disabled>
+          Login To Reply
+        </button>
+        {% endif %}
+        <div class="replies my-2 ">
+          {% for reply in replyDict|get_val:comment.sno %}
+          <!--This pumps value in reply by taking corresponding key from replyDict-->
+          <div class="row my-3 mx-0">
+            <div class="col-md-1  "><!--w-100 makes width 100%-->
+              <img class="rounded mx-auto d-block w-75 p-1 rounded-4 border border-success" src="/static/img/user.png"
+                alt="user">
+            </div>
+            <div class="col-md-11 ">
+              <b> {{reply.user.username}} </b> <span class="badge text-bg-success">{{reply.timestamp | naturaltime}}</span>
+              <div> {{reply.comment}} </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      <!--Reply End Here-->
+
+
+
+    </div>
+  </div>
+  {% endfor %}
+
+
+</div>
+{% endblock %}
